@@ -1,0 +1,48 @@
+title: Auto-increment Android version values in version.gradle
+summary: Auto-increment Android versionCode and versionName in version.gradle
+description: Auto-increment Android versionCode and versionName in version.gradle
+website:
+source_code_url:
+support_url:
+host_os_tags:
+  - osx-10.11.5
+project_type_tags:
+  - android
+type_tags:
+  - build
+  - utils
+is_requires_admin_user: false
+is_always_run: false
+is_skippable: false
+run_if: true
+inputs:
+  - version_gradle_file:
+    opts:
+      title: "Path to version.gradle file"
+#      summary:
+      description: |
+        Path to the given project's version.gradle file.
+#      is_expand: false
+      is_required: true
+#      is_dont_change_value: true
+#      value_options: []
+  - version_code_offset: 1
+    opts:
+      title: "Version Code Offset"
+      description: |
+        This offset will be added to version code input's value.
+      is_required: false
+outputs:
+  - GRADLE_VERSION_CODE:
+    opts:
+      title: "New gradle version code"
+      summary: "The new value of versionCode in the version.gradle file."
+      description: |
+        The new value of `versionCode` in the `version.gradle` file.
+  - GRADLE_VERSION_NAME:
+    opts:
+      title: "New gradle version name"
+      summary: "The new value of versionName in the version.gradle file."
+      description: |
+        The new value of `versionName` in the `version.gradle` file.
+
