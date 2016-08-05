@@ -25,6 +25,7 @@ android {
 ### Build Step Input
 #### Required
 * `version_gradle_file`: full path to `version.gradle` file.
+
 #### Optional
 * `version_code_offset`: amount to increment `versionCode`.  Default value is 1.
 
