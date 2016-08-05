@@ -31,15 +31,20 @@ android {
 ### Build Step Output
 * `GRADLE_VERSION_CODE`: The new value of `versionCode` in the `version.gradle` file.
 * `GRADLE_VERSION_NAME`: The new value of `versionName` in the `version.gradle` file.
+* `ORIGINAL_GRADLE_VERSION_NAME`: The original value of `versionName` in the `version.gradle` file.
 
+### Build Step Testing
+```
+$ bitrise run test
+```
 ## TODO
 * Allow for `version_code` to be specified with default `$BITRISE_BUILD_NUMBER` instead of incrementing the pre-existing value.
 The would mean the nature of the build step would change.
 * Allow for replacing instead of appending `version_code` to `versionName` if `versionCode` is not found at the end of the string.
-* fix bitrise.yml for testing and sharing.
+* fix bitrise.yml for sharing.
 * USE CASE: support/test updating gradle.property file (should work).
 * USE CASE: support/test updating build.gradle file (should work).
-* Output new_version_code and new_version_name from step.
+
 
 ## Credits
 * based on [Set Android Manifest Version Code and Name](https://github.com/jamesmontemagno/steps-set-android-manifest-versions) build step.

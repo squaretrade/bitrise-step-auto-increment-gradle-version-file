@@ -1,11 +1,12 @@
 title: Auto-increment Android version values in version.gradle
 summary: Auto-increment Android versionCode and versionName in version.gradle
 description: Auto-increment Android versionCode and versionName in version.gradle
-website:
-source_code_url:
-support_url:
+website: https://github.com/squaretrade/bitrise-step-auto-increment-gradle-version-file
+source_code_url: https://github.com/squaretrade/bitrise-step-auto-increment-gradle-version-file
+support_url: https://github.com/bitrise-steplib/steps-sign-apk/issues
 host_os_tags:
   - osx-10.11.5
+  - ubuntu
 project_type_tags:
   - android
 type_tags:
@@ -24,15 +25,22 @@ inputs:
         Path to the given project's version.gradle file.
 #      is_expand: false
       is_required: true
-#      is_dont_change_value: true
+      is_dont_change_value: true
 #      value_options: []
   - version_code_offset: 1
     opts:
       title: "Version Code Offset"
       description: |
         This offset will be added to version code input's value.
+      is_dont_change_value: true
       is_required: false
 outputs:
+  - ORIGINAL_GRADLE_VERSION_NAME:
+    opts:
+      title: "Original gradle version name"
+      summary: "The original value of versionName in the version.gradle file."
+      description: |
+        The original value of `versionName` in the `version.gradle` file.
   - GRADLE_VERSION_CODE:
     opts:
       title: "New gradle version code"

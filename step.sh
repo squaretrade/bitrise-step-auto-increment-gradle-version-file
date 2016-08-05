@@ -56,6 +56,7 @@ rm -f ${version_gradle_file}.bak2
 rm -f ${version_gradle_file}.bak
 
 # ---- output environment variables
+envman add --key ORIGINAL_GRADLE_VERSION_NAME --value "${version_name}"
 envman add --key GRADLE_VERSION_CODE --value "${new_version_code}"
 envman add --key GRADLE_VERSION_NAME --value "${new_version_name}"
 

@@ -1,7 +1,25 @@
 format_version: 1.1.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
+app:
+  envs:
+  - VERSION_GRADLE_FILE: version.gradle
+  - VERSION_CODE_OFFSET: 1
 workflows:
+  audit:
+    steps:
+    - script:
+        title: Step audit (validate step.yml)
+        inputs:
+        - content: stepman audit --step-yml=./step.yml
+  _envman:
+    steps:
+      - script:
+          title: envman print
+          inputs:
+          - content: |-
+              #!/bin/bash
+              envman p
   test:
     steps:
     - change-workdir:
@@ -15,17 +33,52 @@ workflows:
         inputs:
         - path: ./_tmp
         - is_create_path: true
+    - script:
+        title: copy test data
+        inputs:
+        - content: |-
+            #!/bin/bash
+            cp ../test/data/* .
     - path::./:
-        title: Step Test
+        title: Step Test (append)
         description: |-
           The example input has a default value,
           you can overwrite it if you want to, just like we did below,
           but the step would use the default value specified in the `step.yml`
           file if you would not specify another value.
         inputs:
-        - example_step_input: Example Step Input's value
-
-
+        - version_gradle_file: version.gradle
+    - script: 
+        title: envman print
+        inputs:
+        - content: envman p 
+    - path::./:
+        title: Step Test (replace)
+        description: |-
+          The example input has a default value,
+          you can overwrite it if you want to, just like we did below,
+          but the step would use the default value specified in the `step.yml`
+          file if you would not specify another value.
+        inputs:
+        - version_gradle_file: version2.gradle
+    - script: 
+        title: envman print
+        inputs:
+        - content: envman p 
+    - path::./:
+        title: Step Test (replace w/increment by 10)
+        description: |-
+          The example input has a default value,
+          you can overwrite it if you want to, just like we did below,
+          but the step would use the default value specified in the `step.yml`
+          file if you would not specify another value.
+        inputs:
+        - version_gradle_file: version2.gradle
+        - version_code_offset: 10
+    - script: 
+        title: envman print
+        inputs:
+        - content: envman p 
   # ----------------------------------------------------------------
   # --- workflows to Share this step into a Step Library
   share-this-step:
