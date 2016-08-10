@@ -3,6 +3,12 @@
 # exit if a command fails
 set -e
 
+# --- Debug
+#version_gradle_file="version.gradle"
+#is_dry_run=true
+#version_code_offset = 1
+#set -x
+
 # --- Required parameters check
 if [ -z "${version_gradle_file}" ] ; then
   echo " [!] Missing required input: version_gradle_file"
@@ -14,7 +20,17 @@ if [ ! -f "${version_gradle_file}" ] ; then
   exit 1
 fi
 echo " (i) Gradle version file: ${version_gradle_file}"
-echo " (i) Version code offset: ${version_code_offset}"
+
+# --- Optional parameters check
+if [[ -n "${is_dry_run}" && "${is_dry_run}" == "true" ]] ; then
+  is_dry_run=true
+else
+  is_dry_run=false  
+  if [ -z ${version_code_offset} ] ; then
+    version_code_offset=1  
+  fi
+  echo " (i) Version code offset: ${version_code_offset}"
+fi
 
 # --- Extract versionCode from version.gradle file
 version_code=`grep versionCode ${version_gradle_file} | sed 's/^[[:blank:]]*versionCode[[:blank:]]*=[[:blank:]]*\([[:digit:]]*\).*$/\1/'`
@@ -32,33 +48,34 @@ if [ -z "${version_name}" ] ; then
 fi
 echo " (i) Current versionName: ${version_name}"
 
-# --- Compute version_code_offset
-new_version_code=$((${version_code} + ${version_code_offset}))
-echo " (i) New versionCode: ${new_version_code}"
+if [ "${is_dry_run}" = false ] ; then
+  # --- Compute new_version_code based on version_code_offset
+  new_version_code=$((${version_code} + ${version_code_offset}))
+  echo " (i) New versionCode: ${new_version_code}"
 
-# --- Compute new_version_name by replacing or appending new_version_code in/to version_name
-if [[ $version_name =~ \.$version_code$ ]]; then
-  #echo " (i) replacing versionCode '.${VERSIONCODE}' in '${VERSIONNAME}' with '${NEWVERSIONCODE}'"
-  new_version_name=`sed "s/.${version_code}$/.${new_version_code}/" <<< $version_name`
-else
-  #echo " (i) appending '.${NEWVERSIONCODE}' to ${VERSIONNAME}"
-  new_version_name="${version_name}.${new_version_code}"
+  # --- Compute new_version_name by replacing or appending new_version_code in/to version_name
+  if [[ $version_name =~ \.$version_code$ ]]; then
+    #echo " (i) replacing versionCode '.${VERSIONCODE}' in '${VERSIONNAME}' with '${NEWVERSIONCODE}'"
+    new_version_name=`sed "s/.${version_code}$/.${new_version_code}/" <<< $version_name`
+  else
+    #echo " (i) appending '.${NEWVERSIONCODE}' to ${VERSIONNAME}"
+    new_version_name="${version_name}.${new_version_code}"
+  fi
+  echo " (i) New versionName: ${new_version_name}"
+
+  # --- Replace versionCode and versionName in version.gradle file
+  sed -i.bak "s/\(versionCode[[:blank:]]*=[[:blank:]]*\)${version_code}/\1${new_version_code}/" ${version_gradle_file}
+  sed -i.bak2 "s/\(versionName[[:blank:]]*=[[:blank:]]*\"\)${version_name}\"/\1${new_version_name}\"/" ${version_gradle_file}
+
+  # ---- Remove backups:
+  rm -f ${version_gradle_file}.bak2
+  rm -f ${version_gradle_file}.bak
+
+  # ---- output environment variables
+  envman add --key GRADLE_VERSION_CODE --value "${new_version_code}"
+  envman add --key GRADLE_VERSION_NAME --value "${new_version_name}"
 fi
-echo " (i) New versionName: ${new_version_name}"
-
-
-# --- Replace versionCode and versionName in version.gradle file
-sed -i.bak "s/\(versionCode[[:blank:]]*=[[:blank:]]*\)${version_code}/\1${new_version_code}/" ${version_gradle_file}
-sed -i.bak2 "s/\(versionName[[:blank:]]*=[[:blank:]]*\"\)${version_name}\"/\1${new_version_name}\"/" ${version_gradle_file}
-
-# ---- Remove backups:
-rm -f ${version_gradle_file}.bak2
-rm -f ${version_gradle_file}.bak
-
-# ---- output environment variables
 envman add --key ORIGINAL_GRADLE_VERSION_NAME --value "${version_name}"
-envman add --key GRADLE_VERSION_CODE --value "${new_version_code}"
-envman add --key GRADLE_VERSION_NAME --value "${new_version_name}"
 
 #
 # --- Export Environment Variables for other Steps:

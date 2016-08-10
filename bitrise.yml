@@ -12,14 +12,6 @@ workflows:
         title: Step audit (validate step.yml)
         inputs:
         - content: stepman audit --step-yml=./step.yml
-  _envman:
-    steps:
-      - script:
-          title: envman print
-          inputs:
-          - content: |-
-              #!/bin/bash
-              envman p
   test:
     steps:
     - change-workdir:
@@ -40,12 +32,16 @@ workflows:
             #!/bin/bash
             cp ../test/data/* .
     - path::./:
+        title: Step Test (dry run)
+        inputs:
+        - version_gradle_file: version.gradle
+        - is_dry_run: true
+    - script: 
+        title: envman print
+        inputs:
+        - content: envman p 
+    - path::./:
         title: Step Test (append)
-        description: |-
-          The example input has a default value,
-          you can overwrite it if you want to, just like we did below,
-          but the step would use the default value specified in the `step.yml`
-          file if you would not specify another value.
         inputs:
         - version_gradle_file: version.gradle
     - script: 
@@ -54,11 +50,6 @@ workflows:
         - content: envman p 
     - path::./:
         title: Step Test (replace)
-        description: |-
-          The example input has a default value,
-          you can overwrite it if you want to, just like we did below,
-          but the step would use the default value specified in the `step.yml`
-          file if you would not specify another value.
         inputs:
         - version_gradle_file: version2.gradle
     - script: 
@@ -67,11 +58,6 @@ workflows:
         - content: envman p 
     - path::./:
         title: Step Test (replace w/increment by 10)
-        description: |-
-          The example input has a default value,
-          you can overwrite it if you want to, just like we did below,
-          but the step would use the default value specified in the `step.yml`
-          file if you would not specify another value.
         inputs:
         - version_gradle_file: version2.gradle
         - version_code_offset: 10

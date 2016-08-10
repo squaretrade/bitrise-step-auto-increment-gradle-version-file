@@ -15,7 +15,6 @@ type_tags:
 is_requires_admin_user: false
 is_always_run: false
 is_skippable: false
-run_if: true
 inputs:
   - version_gradle_file:
     opts:
@@ -32,6 +31,13 @@ inputs:
       title: "Version Code Offset"
       description: |
         This offset will be added to version code input's value.
+      is_dont_change_value: true
+      is_required: false
+  - is_dry_run: false
+    opts:
+      title: "Dry Run"
+      description: |
+        If true, do not modify version.gradle; read version.gradle file and output ORIGINAL_GRADLE_VERSION_NAME only.
       is_dont_change_value: true
       is_required: false
 outputs:
@@ -53,4 +59,3 @@ outputs:
       summary: "The new value of versionName in the version.gradle file."
       description: |
         The new value of `versionName` in the `version.gradle` file.
-
